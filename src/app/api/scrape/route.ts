@@ -1,5 +1,6 @@
 // src/app/api/scrape/route.ts
 import * as cheerio from 'cheerio'      //using cheerio library
+import { summariseText } from '@/lib/summarise'
 
 export async function POST(req: Request)   // handling POST request at the backend
 {
@@ -16,19 +17,41 @@ export async function POST(req: Request)   // handling POST request at the backe
       },
     })
 
-    const html = await res.text()  // getting the ftml of the url(blog)
+    const html = await res.text()  // getting the html of the url(blog)
 
     const $ = cheerio.load(html)   // loads html into cheerio
+    
+    $('.comments, #comments, .comment-list').remove() // Remove common comment sections
+
     let text = ''
-    $('h1, h2, h3, h4, h5, h6, p').each((_, el) => 
+    
+    const primary = $('article, main, section')
+    if (primary.length) 
     {
-      const tag = $(el).prop('tagName')?.toLowerCase()
-      text += $(el).text().trim() + '\n\n'  // line breaks for spacing
-    })
-    return Response.json({ text })   // returning text to frontend
+      primary.find('p, h1, h2, h3, h4, h5, h6').each((_, el) => 
+      {
+        const cleaned = $(el).text().trim()
+        if (cleaned) text += cleaned + '\n\n'
+      })
+    } 
+    else 
+    {
+      $('h1, h2, h3, h4, h5, h6, p').each((_, el) => 
+      {
+        const cleaned = $(el).text().trim()
+        if (cleaned) text += cleaned + '\n\n'
+      })
+    }
+
+    text = text.trim()   //remove starting/ending whitespace
+
+    const summary = summariseText(text)  // Summarize the final content
+    
+    return Response.json({ full: text, summary })    // returning text and summary to frontend
   } 
   catch (error) 
   {
-    return Response.json({ error: 'Failed to fetch/scrape content' }, { status: 500 })   // if anything fails then return the error
+    console.error("SCRAPE ERROR:", error)
+    return Response.json({ error: 'Scraping or summarizing failed' }, { status: 500 })   // if anything fails then return the error
   }
 }

@@ -9,6 +9,7 @@ export default function HomePage()
 {
   const [url, setUrl] = useState("")   // url of the blog
   const [scrapedText, setScrapedText] = useState("") //text that is scrapped from the blog
+  const [summary, setSummary] = useState("")       // text of the summary
 
   const handleSubmit = async (e: React.FormEvent) =>
   {
@@ -27,13 +28,15 @@ export default function HomePage()
 
       if (res.ok)                   // successful scrapping
       {
-        console.log("Scraped Content:", data.text)
-        setScrapedText(data.text) 
+        console.log("Scraped Content:", data.full)
+        setScrapedText(data.full) 
+        setSummary(data.summary)
       } 
       else                          // scrapping failed
       {
         console.error("Scrape failed:", data.error)
         setScrapedText("Scraping failed. Please try another URL.")
+        setSummary("")
       }
     } 
     catch (err)                      // incase of error
@@ -78,6 +81,14 @@ export default function HomePage()
       <p className="text-sm text-gray-800 whitespace-pre-wrap">{scrapedText}</p>
       </div>
       )}
+
+      {summary && (
+      <div className="mt-6 max-w-md bg-purple-100 p-4 rounded-lg shadow">
+      <h3 className="font-semibold mb-2">Summary:</h3>
+      <p className="text-sm text-gray-800 whitespace-pre-wrap">{summary}</p>
+      </div>
+      )}
+
 
     </main>
   )
