@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -6,11 +7,41 @@ import { Button } from "@/components/ui/button"
 
 export default function HomePage() 
 {
-  const [url, setUrl] = useState("")
+  const [url, setUrl] = useState("")   // url of the blog
+  const [scrapedText, setScrapedText] = useState("") //text that is scrapped from the blog
 
-  const handleSubmit = (e: React.FormEvent) =>
+  const handleSubmit = async (e: React.FormEvent) =>
   {
     e.preventDefault()
+
+    try                               //sending a POST request
+    {                             
+      const res = await fetch('/api/scrape', 
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        })
+
+      const data = await res.json()
+
+      if (res.ok)                   // successful scrapping
+      {
+        console.log("Scraped Content:", data.text)
+        setScrapedText(data.text) 
+      } 
+      else                          // scrapping failed
+      {
+        console.error("Scrape failed:", data.error)
+        setScrapedText("Scraping failed. Please try another URL.")
+      }
+    } 
+    catch (err)                      // incase of error
+    {
+      console.error("Error scraping:", err)
+      setScrapedText("Something went wrong. Please check the URL and try again.")
+    }
+    
     console.log("Blog URL:", url)
   }
 
@@ -39,6 +70,15 @@ export default function HomePage()
         Summarise
         </Button>
       </form>
+
+      {/*Temporarily showing the scrapped content */}
+      {scrapedText && (
+      <div className="mt-6">
+      <h3 className="font-semibold mb-2">Scraped Content:</h3>
+      <p className="text-sm text-gray-800 whitespace-pre-wrap">{scrapedText}</p>
+      </div>
+      )}
+
     </main>
   )
 }
