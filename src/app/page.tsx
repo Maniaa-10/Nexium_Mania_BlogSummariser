@@ -10,6 +10,7 @@ export default function HomePage()
   const [url, setUrl] = useState("")   // url of the blog
   const [scrapedText, setScrapedText] = useState("") //text that is scrapped from the blog
   const [summary, setSummary] = useState("")       // text of the summary
+  const [urdu, setUrdu] = useState("")             // urdu translation of the summary
 
   const handleSubmit = async (e: React.FormEvent) =>
   {
@@ -25,18 +26,21 @@ export default function HomePage()
         })
 
       const data = await res.json()
+      console.log("API Response:", data) 
 
       if (res.ok)                   // successful scrapping
       {
         console.log("Scraped Content:", data.full)
         setScrapedText(data.full) 
         setSummary(data.summary)
+        setUrdu(data.urdu)
       } 
       else                          // scrapping failed
       {
         console.error("Scrape failed:", data.error)
         setScrapedText("Scraping failed. Please try another URL.")
         setSummary("")
+        setUrdu("")
       }
     } 
     catch (err)                      // incase of error
@@ -54,9 +58,9 @@ export default function HomePage()
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full max-w-md bg-purple-100 p-6 rounded-xl shadow-lg mt-20">
         
-        <h1 className="text-2xl font-bold text-center text-gray-900 hover:text-gray-900 hover:[-webkit-text-stroke:1px_black]">Blog Summariser</h1>
+        <h1 className="text-4xl font-bold text-center text-gray-900 hover:text-gray-900 hover:[-webkit-text-stroke:1px_black]">Blog Summariser</h1>
 
-        <h2 className="text-gray-800 text-opacity-80 text-sm text-center max-w-md  mb-6">
+        <h2 className="text-gray-800 text-opacity-80 text-center max-w-md  mb-6">
           Get the gist, ditch the rest
         </h2>   
         <Input
@@ -84,8 +88,19 @@ export default function HomePage()
 
       {summary && (
       <div className="mt-6 max-w-md bg-purple-100 p-4 rounded-lg shadow">
-      <h3 className="font-semibold mb-2">Summary:</h3>
+      <h3 className="font-semibold mb-2">Summary: </h3>
       <p className="text-sm text-gray-800 whitespace-pre-wrap">{summary}</p>
+      </div>
+      )}
+
+      {urdu && (
+      <div className="mt-6 max-w-md bg-white bg-opacity-90 p-4 rounded-lg shadow">
+      <h3 className="font-semibold text-right mb-2">:اردو ترجمہ</h3>
+      <p className="text-sm text-gray-800 text-right whitespace-pre-wrap">{urdu}</p>
+      <p className="text-sm text-gray-700 text-centre italic mt-4">
+     ⚠️Only a few words translated via hardcoded limited JS dictionary</p>
+      <p className="text-xs text-gray-600 text-right mt-1 px-20">
+      (یہ ترجمہ محدود جاوا اسکرپٹ لغت پر مبنی ہے  )  </p>
       </div>
       )}
 

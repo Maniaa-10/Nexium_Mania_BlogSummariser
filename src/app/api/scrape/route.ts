@@ -1,6 +1,8 @@
 // src/app/api/scrape/route.ts
 import * as cheerio from 'cheerio'      //using cheerio library
 import { summariseText } from '@/lib/summarise'
+import { translateToUrdu } from '@/lib/translateToUrdu'
+import dictionary from '@/lib/dictionary'
 
 export async function POST(req: Request)   // handling POST request at the backend
 {
@@ -46,8 +48,9 @@ export async function POST(req: Request)   // handling POST request at the backe
     text = text.trim()   //remove starting/ending whitespace
 
     const summary = summariseText(text)  // Summarize the final content
+    const urdu = translateToUrdu(summary)  // translate the summary into urdu 
     
-    return Response.json({ full: text, summary })    // returning text and summary to frontend
+    return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
   catch (error) 
   {
