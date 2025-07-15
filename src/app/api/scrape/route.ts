@@ -1,5 +1,5 @@
 // src/app/api/scrape/route.ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import axios from 'axios'
 
 import * as cheerio from 'cheerio'                          //using cheerio library
