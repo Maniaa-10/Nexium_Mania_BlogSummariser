@@ -1,14 +1,14 @@
 // src/app/api/scrape/route.ts
-import * as cheerio from 'cheerio'      //using cheerio library
-import { summariseText } from '@/lib/summarise'
-import { translateToUrdu } from '@/lib/translateToUrdu'
-import { supabase } from '@/lib/supabase'
+import * as cheerio from 'cheerio'                          //using cheerio library
+import { summariseText } from '@/lib/summarise'            // for finding summary
+import { translateToUrdu } from '@/lib/translateToUrdu'   // for translating into urdu
+import { supabase } from '@/lib/supabase'                // for saving summary into supabase
 
 export async function POST(req: Request)   // handling POST request at the backend
 {
   try 
   {
-    const { url, fulltext } = await req.json()    // gets the url sent by the frontend
+    const { url } = await req.json()    // gets the url sent by the frontend
 
     const res = await fetch(url, 
     {
@@ -24,9 +24,7 @@ export async function POST(req: Request)   // handling POST request at the backe
     const $ = cheerio.load(html)   // loads html into cheerio
     
     $('.comments, #comments, .comment-list').remove() // Remove common comment sections
-
-    let text = ''
-    
+    let text = ''    
     const primary = $('article, main, section')
     if (primary.length) 
     {
@@ -38,30 +36,28 @@ export async function POST(req: Request)   // handling POST request at the backe
     } 
     else 
     {
-      $('h1, h2, h3, h4, h5, h6, p').each((_, el) => 
+      $('h1, h2, h3, h4, h5, h6, p').each((_ , el) => 
       {
         const cleaned = $(el).text().trim()
         if (cleaned) text += cleaned + '\n\n'
       })
     }
-
     text = text.trim()   //remove starting/ending whitespace
 
     const summary = summariseText(text)  // Summarize the final content
     const urdu = translateToUrdu(summary)  // translate the summary into urdu 
 
-    // Save to Supabase
-
-    const { data, error } = await supabase
-  .from('summaries')
-  .insert([
+    const { error } = await supabase   // Save to Supabase
+    .from('summaries')
+    .insert([
     { 
       url: url,
       summary: summary , 
       translatedSummary: urdu,
     },
-  ])
-  .select()
+    ])
+    .select()
+
     return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
   catch (error) 
