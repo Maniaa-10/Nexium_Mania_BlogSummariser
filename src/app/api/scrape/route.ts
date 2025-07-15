@@ -11,7 +11,7 @@ export async function POST(req: Request)   // handling POST request at the backe
   try 
   {
     const { url } = await req.json()    // gets the url sent by the frontend
-      console.log('🔗 Received URL:', url)
+      //console.log('🔗 Received URL:', url)
 
     const res = await fetch(url, 
     {
@@ -23,7 +23,7 @@ export async function POST(req: Request)   // handling POST request at the backe
     })
 
     const html = await res.text()  // getting the html of the url(blog)
-     console.log('📥 HTML fetched successfully')
+     //console.log('📥 HTML fetched successfully')
 
     const $ = cheerio.load(html)   // loads html into cheerio
     
@@ -47,13 +47,13 @@ export async function POST(req: Request)   // handling POST request at the backe
       })
     }
     text = text.trim()   //remove starting/ending whitespace
-      console.log("📄 Extracted text sample:")
+      //console.log("📄 Extracted text sample:")
       
     const summary = summariseText(text)  // Summarize the final content
-     console.log("🧠 Summary generated:", summary)
+     //console.log("🧠 Summary generated:", summary)
     
     const urdu = translateToUrdu(summary)  // translate the summary into urdu 
-     console.log("🌐 Urdu translation done")
+     //console.log("🌐 Urdu translation done")
 
     const { error } = await supabase   // Save to Supabase
     .from('summaries')
@@ -71,7 +71,7 @@ export async function POST(req: Request)   // handling POST request at the backe
       console.error("Supabase Insert Error:", error.message || error.details || error)
       throw new Error("Failed to insert into Supabase")
     }
-       
+       //console.log("📤 Saved to Supabase")
 
     const client = await clientPromise        // save to mongodb
     const db = client.db('nexium-blogSummariser')
@@ -83,7 +83,7 @@ export async function POST(req: Request)   // handling POST request at the backe
       text,
       createdAt: new Date()
     })
-      
+      //console.log("💾 Saved to MongoDB")
       
     return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
