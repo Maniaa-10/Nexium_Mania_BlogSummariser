@@ -1,4 +1,7 @@
 // src/app/api/scrape/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import axios from 'axios'
+
 import * as cheerio from 'cheerio'                          //using cheerio library
 import { summariseText } from '@/lib/summarise'            // for finding summary
 import { translateToUrdu } from '@/lib/translateToUrdu'   // for translating into urdu
@@ -6,22 +9,21 @@ import { supabase } from '@/lib/supabase'                // for saving summary i
 import clientPromise from '@/lib/mongodb'               // for saving complete blog into mongodb
 
 
-export async function POST(req: Request)   // handling POST request at the backend
+
+export async function POST(req: NextRequest)   // handling POST request at the backend
 {
   try 
   {
-    const { url } = await req.json()    // gets the url sent by the frontend
+       const { url } = await req.json() // gets the url sent by the frontend
+const response = await axios.get(url, {
+  headers: {
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36',
+  },
+})
 
-    const res = await fetch(url, 
-    {
-      headers: 
-      {
-        'User-Agent': 'Mozilla/5.0',
-        'Accept': 'text/html',
-      },
-    })
 
-    const html = await res.text()  // getting the html of the url(blog)
+    const html = await response.data()  // getting the html of the url(blog)
 
     const $ = cheerio.load(html)   // loads html into cheerio
     
@@ -82,6 +84,6 @@ export async function POST(req: Request)   // handling POST request at the backe
   catch (error) 
   {
     console.error("SCRAPE ERROR:", error)
-    return Response.json({ error: 'Scraping or summarizing failed' }, { status: 500 })   // if anything fails then return the error
+    return NextResponse.json({ error: 'Scraping or summarizing failed' }, { status: 500 })   // if anything fails then return the error
   }
 }
