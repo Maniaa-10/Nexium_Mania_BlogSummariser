@@ -88,17 +88,11 @@ console.log("🌐 Urdu translation done")
 console.log("💾 Saved to MongoDB")
     return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
-catch (error: any) {
-  console.error("SCRAPE ERROR:", error?.message || error)
-
-  return NextResponse.json(
-    {
-      error: 'Scraping or summarizing failed',
-      message: error?.message || 'Unknown error',
-      stack: error?.stack || '',
-    },
-    { status: 500 }
-  )
+catch (error: unknown) 
+{
+  console.error("SCRAPE ERROR:", error)
+  return Response.json({ error: 'Scraping or summarizing failed' }, { status: 500 })
 }
+
 
 }
