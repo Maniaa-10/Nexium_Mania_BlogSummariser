@@ -15,17 +15,19 @@ export async function POST(req: NextRequest)   // handling POST request at the b
   try 
   {
        const { url } = await req.json() // gets the url sent by the frontend
+       console.log("🔗 Received URL:", url)
 const response = await axios.get(url, {
   headers: {
     'User-Agent':
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36',
   },
 })
+console.log("📥 Fetched HTML successfully")
 
-
-    const html = await response.data()  // getting the html of the url(blog)
+    const html =  response.data  // getting the html of the url(blog)
 
     const $ = cheerio.load(html)   // loads html into cheerio
+    console.log("📥 Fetched HTML successfully")
     
     $('.comments, #comments, .comment-list').remove() // Remove common comment sections
     let text = ''    
@@ -49,7 +51,10 @@ const response = await axios.get(url, {
     text = text.trim()   //remove starting/ending whitespace
 
     const summary = summariseText(text)  // Summarize the final content
+    console.log("🧠 Summary generated:", summary)
+
     const urdu = translateToUrdu(summary)  // translate the summary into urdu 
+console.log("🌐 Urdu translation done")
 
     const { error } = await supabase   // Save to Supabase
     .from('summaries')
@@ -61,6 +66,8 @@ const response = await axios.get(url, {
     },
     ])
     .select()
+    console.log("📤 Saved to Supabase")
+
 
     if (error) 
     {
@@ -78,12 +85,20 @@ const response = await axios.get(url, {
       text,
       createdAt: new Date()
     })
-
+console.log("💾 Saved to MongoDB")
     return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
-  catch (error) 
-  {
-    console.error("SCRAPE ERROR:", error)
-    return NextResponse.json({ error: 'Scraping or summarizing failed' }, { status: 500 })   // if anything fails then return the error
-  }
+catch (error: any) {
+  console.error("SCRAPE ERROR:", error?.message || error)
+
+  return NextResponse.json(
+    {
+      error: 'Scraping or summarizing failed',
+      message: error?.message || 'Unknown error',
+      stack: error?.stack || '',
+    },
+    { status: 500 }
+  )
+}
+
 }
