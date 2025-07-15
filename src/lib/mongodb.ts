@@ -9,17 +9,17 @@ if (!process.env.MONGODB_URI)
 const uri = process.env.MONGODB_URI
 const options = {}
 
-let client: MongoClient
-let clientPromise: Promise<MongoClient>
 
 declare global 
 {
-  var _mongoClientPromise: Promise<MongoClient>
+  var _mongoClientPromise: Promise<MongoClient> | undefined
 }
+
+let clientPromise: Promise<MongoClient>
 
 if (!global._mongoClientPromise) 
 {
-  client = new MongoClient(uri!, options)
+  const client = new MongoClient(uri!, options)
   global._mongoClientPromise = client.connect()
 }
 
