@@ -2,13 +2,13 @@
 import * as cheerio from 'cheerio'      //using cheerio library
 import { summariseText } from '@/lib/summarise'
 import { translateToUrdu } from '@/lib/translateToUrdu'
-import dictionary from '@/lib/dictionary'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(req: Request)   // handling POST request at the backend
 {
   try 
   {
-    const { url } = await req.json()    // gets the url sent by the frontend
+    const { url, fulltext } = await req.json()    // gets the url sent by the frontend
 
     const res = await fetch(url, 
     {
@@ -49,7 +49,19 @@ export async function POST(req: Request)   // handling POST request at the backe
 
     const summary = summariseText(text)  // Summarize the final content
     const urdu = translateToUrdu(summary)  // translate the summary into urdu 
-    
+
+    // Save to Supabase
+
+    const { data, error } = await supabase
+  .from('summaries')
+  .insert([
+    { 
+      url: url,
+      summary: summary , 
+      translatedSummary: urdu,
+    },
+  ])
+  .select()
     return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
   catch (error) 

@@ -98,12 +98,11 @@ export default function HomePage()
       <h3 className="font-semibold text-right mb-2">:اردو ترجمہ</h3>
       <p className="text-sm text-gray-800 text-right whitespace-pre-wrap">{urdu}</p>
       <p className="text-sm text-gray-700 text-centre italic mt-4">
-     ⚠️Only a few words translated via hardcoded limited JS dictionary</p>
+          ⚠️Only a few words translated via hardcoded limited JS dictionary</p>
       <p className="text-xs text-gray-600 text-right mt-1 px-20">
-      (یہ ترجمہ محدود جاوا اسکرپٹ لغت پر مبنی ہے  )  </p>
+           (یہ ترجمہ محدود جاوا اسکرپٹ لغت پر مبنی ہے  )  </p>
       </div>
       )}
-
 
     </main>
   )
