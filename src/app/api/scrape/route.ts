@@ -39,11 +39,12 @@ export async function POST(req: NextRequest) {
         if (cleaned) text += cleaned + '\n\n'
       })
     }
+text = text.trim()
+console.log("📄 Extracted text sample:", text.slice(0, 300))
 
-    text = text.trim()
-    if (!text || text.length < 100) {
-      throw new Error('❌ Extracted text is too short or missing')
-    }
+if (!text || text.length < 100) {
+  throw new Error('❌ Extracted text is too short or missing')
+}
 
     const summary = summariseText(text)
     const urdu = translateToUrdu(summary)
