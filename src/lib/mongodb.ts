@@ -15,7 +15,6 @@ declare global
   var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
-let clientPromise: Promise<MongoClient>
 
 if (!global._mongoClientPromise) 
 {
@@ -23,5 +22,5 @@ if (!global._mongoClientPromise)
   global._mongoClientPromise = client.connect()
 }
 
-clientPromise = global._mongoClientPromise
+const clientPromise: Promise<MongoClient> = global._mongoClientPromise
 export default clientPromise
