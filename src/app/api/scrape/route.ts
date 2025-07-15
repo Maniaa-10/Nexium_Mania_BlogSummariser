@@ -58,6 +58,12 @@ export async function POST(req: Request)   // handling POST request at the backe
     ])
     .select()
 
+    if (error) 
+    {
+      console.error("Supabase Insert Error:", error.message || error.details || error)
+      throw new Error("Failed to insert into Supabase")
+    }
+
     return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
   catch (error) 
