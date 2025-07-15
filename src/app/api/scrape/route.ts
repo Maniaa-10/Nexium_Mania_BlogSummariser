@@ -3,6 +3,8 @@ import * as cheerio from 'cheerio'                          //using cheerio libr
 import { summariseText } from '@/lib/summarise'            // for finding summary
 import { translateToUrdu } from '@/lib/translateToUrdu'   // for translating into urdu
 import { supabase } from '@/lib/supabase'                // for saving summary into supabase
+import clientPromise from '@/lib/mongodb'               // for saving complete blog into mongodb
+
 
 export async function POST(req: Request)   // handling POST request at the backend
 {
@@ -63,6 +65,17 @@ export async function POST(req: Request)   // handling POST request at the backe
       console.error("Supabase Insert Error:", error.message || error.details || error)
       throw new Error("Failed to insert into Supabase")
     }
+
+    const client = await clientPromise        // save to mongodb
+    const db = client.db('nexium-blogSummariser')
+    const collection = db.collection('fullblogs')
+
+    await collection.insertOne
+    ({
+      url,
+      text,
+      createdAt: new Date()
+    })
 
     return Response.json({ full: text, summary, urdu})    // returning text and summary to frontend
   } 
