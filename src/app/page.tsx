@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { Info } from "lucide-react"
+import { motion } from "framer-motion"
+import { Languages } from "lucide-react"
 
 export default function HomePage() 
 {
@@ -67,11 +69,11 @@ export default function HomePage()
           placeholder="Enter blog URL"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="w-full bg-white rounded-lg mb-2"
+          className="w-full bg-white/90 rounded-xl shadow-xl p-5 transition hover:scale-[1.01] hover:shadow-2xl backdrop-blur-sm mb-2"
         />
         <Button 
           type="submit" 
-          className="bg-gray-900 hover:bg-gray-700 text-white font-medium rounded-lg hover:scale-102"
+          className="bg-gray-900 hover:bg-gray-700 text-white rounded-xl hover:scale-103 backdrop-blur-md"
         >
         Summarise
         </Button>
@@ -87,47 +89,55 @@ export default function HomePage()
       */}
 
       {summary && urdu && (
-      <div className="mt-6  w-full max-w-xl bg-purple-100 p-4 rounded-xl shadow flex flex-col gap-4">
-              <div className="flex w-full max-w-3xl justify-between items-center mt-6">
-        <Button 
-          className=" ml-auto bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-          onClick={() => setLanguage((prev) => prev === "en" ? "ur" : "en")}
-        >
-          Switch to {language === "en" ? "Urdu" : "English"}
-        </Button>
-      </div>
+        <div className="mt-6  w-full max-w-xl bg-purple-100 p-4 rounded-xl shadow flex flex-col gap-4">
 
-      {language === "en" ? (
+        <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.75 }}
+        >
+
+          <div className="flex w-full max-w-3xl justify-between items-center mt-6">
+            <Button 
+              className=" ml-auto bg-black text-white px-4 py-2 text-xs rounded-lg hover:bg-gray-800 hover:scale-[1.02]"
+              onClick={() => setLanguage((prev) => prev === "en" ? "ur" : "en")}
+            >
+              <Languages size={16} />
+              {language === "en" ? "اردو" : "EN"}
+            </Button>
+          </div>
+
+          {language === "en" ? 
+          (
             <div>
               <h2 className="font-semibold mb-2">Summary: </h2>
               <p className="text-sm text-gray-800 whitespace-pre-wrap">{summary}</p>              
             </div>
-          ) : (
+          ) : 
+          (
             <div>
-                            <TooltipProvider>
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <Info className="w-4 h-4 ml-2 cursor-pointer" />
-    </TooltipTrigger>
-    <TooltipContent side="top" className="text-xs">
-              <div className="flex flex-col items-center" >
-                <p className="text-xs text-white text-centre italic mt-1 ">
-                ⚠️Only a few words translated via hardcoded limited JS dictionary</p>
-                <p className="text-xs text-white text-centre mb-1">
-                (یہ ترجمہ محدود جاوا اسکرپٹ لغت پر مبنی ہے  )  </p>
-              </div>
-    </TooltipContent>
-  </Tooltip>
-</TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-4 h-4 ml-2 cursor-pointer" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                      <div className="flex flex-col items-center" >
+                      <p className="text-xs text-white text-centre italic mt-1 ">
+                      ⚠️Only a few words translated via hardcoded limited JS dictionary</p>
+                      <p className="text-xs text-white text-centre mb-1">
+                      (یہ ترجمہ محدود جاوا اسکرپٹ لغت پر مبنی ہے  )  </p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <h2 className="font-semibold text-right mb-2">:اردو ترجمہ</h2>
               <p className="text-sm text-gray-800 text-right whitespace-pre-wrap">{urdu}</p>
-
-
             </div>
-      )}
+          )}
+        </motion.div>
       </div>
       )}
-
 
       <button
         onClick={() => 
